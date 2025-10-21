@@ -19,7 +19,7 @@ class BaseRepository:
         result = await self.session.execute(query)
         model = result.scalars().one_or_none()
         if model is None:
-            return None
+            return
         return self.schema.model_validate(model)
 
     async def create(self, data: BaseModel):
