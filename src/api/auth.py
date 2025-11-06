@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, HTTPException, Response
 
 from src.api.dependencies import UserIdDep
 from src.db import async_session_maker
@@ -6,8 +6,7 @@ from src.repositories.users import UsersRepository
 from src.schemas.users import UserCreate, UserRequestCreate
 from src.services.auth import AuthService
 
-
-router = APIRouter(prefix="/auth", tags=["Авторизация и аутентификация"])
+router = APIRouter(prefix="/auth", tags=["Authorization and authentication"])
 
 
 @router.post("/register")
