@@ -1,7 +1,8 @@
 from typing import Annotated
 
-from fastapi import Depends, Query
+from fastapi import Depends, Query, HTTPException, Request
 from pydantic import BaseModel
+from src.services.auth import AuthService
 
 
 class PaginationParams(BaseModel):
@@ -10,3 +11,20 @@ class PaginationParams(BaseModel):
 
 
 PaginationDep = Annotated[PaginationParams, Depends()]
+
+
+def get_token(request: Request) -> str:
+    token = request.cookies.get("access_token", None)
+    if not token:
+        raise HTTPException(
+            status_code=401, detail="You have not provided an access token."
+        )
+    return token
+
+
+def get_current_user_id(token: str = Depends(get_token)) -> int:
+    data = AuthService().decode_jwt_access_token(token)
+    return data["user_id"]
+
+
+UserIdDep = Annotated[int, Depends(get_current_user_id)]

@@ -13,7 +13,7 @@ class AuthService:
     def verify_password(self, plain_password: str, hashed_password: str):
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def create_jwt_access_token(self, data: dict) -> str:
+    def encode_jwt_access_token(self, data: dict) -> str:
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
@@ -27,7 +27,7 @@ class AuthService:
     def get_hashed_password(self, password: str) -> str:
         return self.pwd_context.hash(password)
 
-    def decode_jwt_access_token(self, token: str | None) -> dict:
+    def decode_jwt_access_token(self, token: str) -> dict:
         try:
             return jwt.decode(
                 token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
