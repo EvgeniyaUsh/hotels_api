@@ -12,11 +12,13 @@ async def register_user(
     data: UserRequestCreate,
     db: DBDep,
 ):
-    hashed_password = AuthService().get_hashed_password(data.password)
-    new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
-    await db.users.create(new_user_data)
-    await db.commit()
-
+    try:
+        hashed_password = AuthService().get_hashed_password(data.password)
+        new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
+        await db.users.create(new_user_data)
+        await db.commit()
+    except Exception:
+        return {"status": "Such user already exist!"}
     return {"status": "OK"}
 
 

@@ -28,7 +28,7 @@ class BaseRepository:
     async def create(self, data: BaseModel):
         add_data_stmt = (
             insert(self.model).values(**data.model_dump()).returning(self.model)
-        )
+        )  # type: ignore
         result = await self.session.execute(add_data_stmt)
         return result.scalars().one()
 
