@@ -40,8 +40,8 @@ async def login_user(
     return {"access_token": access_token}
 
 
-@router.get("/user")
-async def get_user(
+@router.get("/me")
+async def get_me(
     user_id: UserIdDep,
     db: DBDep,
 ):
