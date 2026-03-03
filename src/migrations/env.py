@@ -5,6 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from config import settings
 from db import Base
+from models.bookings import BookingOrm
 from models.hotels import HotelOrm
 from models.rooms import RoomOrm
 from models.users import UserOrm

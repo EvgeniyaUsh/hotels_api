@@ -12,11 +12,13 @@ async def register_user(
     data: UserRequestCreate,
     db: DBDep,
 ):
-    hashed_password = AuthService().get_hashed_password(data.password)
-    new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
-    await db.users.create(new_user_data)
-    await db.commit()
-
+    try:
+        hashed_password = AuthService().get_hashed_password(data.password)
+        new_user_data = UserCreate(email=data.email, hashed_password=hashed_password)
+        await db.users.create(new_user_data)
+        await db.commit()
+    except Exception:
+        return {"status": "Such user already exist!"}
     return {"status": "OK"}
 
 
@@ -38,8 +40,8 @@ async def login_user(
     return {"access_token": access_token}
 
 
-@router.get("/user")
-async def get_user(
+@router.get("/me")
+async def get_me(
     user_id: UserIdDep,
     db: DBDep,
 ):
