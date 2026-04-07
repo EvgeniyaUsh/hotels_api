@@ -4,6 +4,10 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 
+
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.api.auth import router as router_auth
@@ -18,8 +22,11 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def redis_lifespan(app: FastAPI):
+    # Инициализация Redis при запуске приложения
     await redis_manager.connect()
+    FastAPICache.init(RedisBackend(redis_manager.redis), prefix="fastapi-cache")
     yield
+    # Закрытие соединения с Redis при завершении приложения
     await redis_manager.close()
 
 

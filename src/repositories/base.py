@@ -15,6 +15,7 @@ class BaseRepository:
         return [self.schema.model_validate(model) for model in result.scalars().all()]
 
     async def get_all(self):
+        print("Getting all facilities from database")
         return await self.get_filtered()
 
     async def get_one_or_none(self, **filter_by):
