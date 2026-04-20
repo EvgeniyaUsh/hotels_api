@@ -1,4 +1,4 @@
 from celery import Celery
 from src.config import settings
 
-celery_inst = Celery("app", broker=settings.REDIS_URL, include=["src.tasks.task"])
+celery_inst = Celery("app", broker=settings.REDIS_URL, include=["src.tasks.tasks"])
