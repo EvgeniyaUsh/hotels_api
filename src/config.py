@@ -14,9 +14,12 @@ class Settings(BaseSettings):
     REDIS_PORT: int
 
     @property
+    def REDIS_URL(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
+
+    @property
     def DB_URL(self):
-        url = f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-        return url
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
