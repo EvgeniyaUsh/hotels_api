@@ -1,4 +1,4 @@
-from repositories.base import BaseRepository
+from src.repositories.base import BaseRepository
 from src.models.facilities import FacilitiesOrm
 from src.schemas.facilities import Facilities
 

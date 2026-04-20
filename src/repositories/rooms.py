@@ -2,7 +2,7 @@ from datetime import date
 
 from fastapi import Query
 
-from repositories.base import BaseRepository
+from src.repositories.base import BaseRepository
 from src.models.rooms import RoomOrm
 from src.repositories.utils import rooms_ids_for_booking
 from src.schemas.rooms import Room
