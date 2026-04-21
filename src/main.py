@@ -1,4 +1,4 @@
-import asyncio
+import asyncio  # noqa: F401
 import sys
 from pathlib import Path
 
@@ -18,7 +18,7 @@ from src.api.hotels import router as router_hotels
 from src.api.images import router as router_images
 from src.api.rooms import router as router_rooms
 from src.init_redis import redis_manager
-from src.tasks.periodic_task import run_send_email_regularly
+from src.tasks.periodic_task import run_send_email_regularly  # noqa: F401
 
 
 @asynccontextmanager

@@ -8,7 +8,7 @@ class RedisManager:
         self.redis = None
 
     async def connect(self):
-        print(f"Start redis!")
+        print("Start redis!")
         self.redis = await redis.Redis(host=self.host, port=self.port)
 
     async def set(self, key: str, value: str, expire: int = None):
@@ -26,7 +26,7 @@ class RedisManager:
     async def close(self):
         if self.redis:
             await self.redis.close()
-            print(f"Redis is closed!")
+            print("Redis is closed!")
 
 
 # Пример использования:
