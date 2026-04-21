@@ -2,9 +2,9 @@ from datetime import date
 
 from sqlalchemy import func, select
 
-from src.repositories.base import BaseRepository
 from src.models.hotels import HotelOrm
 from src.models.rooms import RoomOrm
+from src.repositories.base import BaseRepository
 from src.repositories.utils import rooms_ids_for_booking
 from src.schemas.hotels import Hotel
 

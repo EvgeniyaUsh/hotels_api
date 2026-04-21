@@ -1,9 +1,11 @@
 import asyncio
 import os
+
 from PIL import Image
+
+from src.db import async_session_maker_null_pool
 from src.tasks.celery_app import celery_inst
 from src.utils.db_manager import DBManager
-from src.db import async_session_maker_null_pool
 
 
 @celery_inst.task
@@ -11,7 +13,7 @@ def test_task():
     print("Hello from the test task!")
 
 
-@celery_inst.task
+# @celery_inst.task
 def resize_image(image_path: str):
     """A task that compresses a photo to a size of px.
     Processed photos are saved to the output_folder."""

@@ -1,29 +1,30 @@
+import asyncio
 import sys
 from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
-
-
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
 sys.path.append(str(Path(__file__).parent.parent))
 
+from contextlib import asynccontextmanager
+
 from src.api.auth import router as router_auth
 from src.api.bookings import router as router_bookings
-from src.api.hotels import router as router_hotels
-from src.api.rooms import router as router_rooms
 from src.api.facilities import router as router_facilities
+from src.api.hotels import router as router_hotels
 from src.api.images import router as router_images
+from src.api.rooms import router as router_rooms
 from src.init_redis import redis_manager
-
-from contextlib import asynccontextmanager
+from src.tasks.periodic_task import run_send_email_regularly
 
 
 @asynccontextmanager
 async def redis_lifespan(app: FastAPI):
     # Инициализация Redis при запуске приложения
+    # asyncio.create_task(run_send_email_regularly())
     await redis_manager.connect()
     FastAPICache.init(RedisBackend(redis_manager.redis), prefix="fastapi-cache")
     yield

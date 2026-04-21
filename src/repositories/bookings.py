@@ -2,8 +2,8 @@ from datetime import date
 
 from sqlalchemy import select
 
-from src.repositories.base import BaseRepository
 from src.models.bookings import BookingOrm
+from src.repositories.base import BaseRepository
 from src.schemas.bookings import Booking
 
 
