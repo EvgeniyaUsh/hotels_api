@@ -13,7 +13,7 @@ class HotelsRepository(BaseRepository):
     model = HotelOrm
     schema = Hotel
 
-    async def get_all(self, location, title, limit, offset):
+    async def get_all_hotels(self, location, title, limit, offset):
         query = select(HotelOrm)
         if location:
             query = query.filter(
