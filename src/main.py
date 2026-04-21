@@ -26,7 +26,9 @@ async def redis_lifespan(app: FastAPI):
     # Инициализация Redis при запуске приложения
     # asyncio.create_task(run_send_email_regularly())
     await redis_manager.connect()
-    FastAPICache.init(RedisBackend(redis_manager.redis), prefix="fastapi-cache")
+    FastAPICache.init(
+        RedisBackend(redis_manager.redis), prefix="fastapi-cache"
+    )
     yield
     # Закрытие соединения с Redis при завершении приложения
     await redis_manager.close()
