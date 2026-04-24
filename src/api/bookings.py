@@ -34,5 +34,5 @@ async def add_booking(
         booking = await db.bookings.create(_booking_data)
         await db.commit()
         return {"status": "OK", "data": booking}
-    
+
     return {"status": "Such room is absent."}

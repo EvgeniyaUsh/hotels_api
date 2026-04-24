@@ -12,7 +12,10 @@ class BaseRepository:
     async def get_filtered(self, *filters_by, **filter_by):
         query = select(self.model).where(*filters_by).filter_by(**filter_by)
         result = await self.session.execute(query)
-        return [self.schema.model_validate(model) for model in result.scalars().all()]
+        return [
+            self.schema.model_validate(model)
+            for model in result.scalars().all()
+        ]
 
     async def get_all(self):
         print("Getting all facilities from database")
@@ -28,12 +31,16 @@ class BaseRepository:
 
     async def create(self, data: BaseModel):
         add_data_stmt = (
-            insert(self.model).values(**data.model_dump()).returning(self.model)
+            insert(self.model)
+            .values(**data.model_dump())
+            .returning(self.model)
         )  # type: ignore
         result = await self.session.execute(add_data_stmt)
         return result.scalars().one()
 
-    async def update(self, data: BaseModel, is_patch=False, **filter_by) -> None:
+    async def update(
+        self, data: BaseModel, is_patch=False, **filter_by
+    ) -> None:
         update_stmt = (
             update(self.model)
             .filter_by(**filter_by)
