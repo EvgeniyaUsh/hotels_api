@@ -8,7 +8,7 @@ Create Date: 2025-10-08 22:56:16.704653
 
 from typing import Sequence, Union
 
-import sqlalchemy as sa
+import sqlalchemy as sa  # noqa: F401
 from alembic import op
 
 revision: str = "d491c9cdf69b"
