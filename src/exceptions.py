@@ -48,6 +48,11 @@ class RoomNotFoundHTTPException(HotelsHTTPException):
     detail = "Room wasn't found."
 
 
+class RoomAlreadyExistsHTTPException(HotelsHTTPException):
+    status_code = 409
+    detail = "Room already exists."
+
+
 class HotelHasRoomsHTTPException(HotelsHTTPException):
     status_code = 409
     detail = "Cannot delete hotel because it still has rooms."

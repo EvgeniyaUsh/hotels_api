@@ -52,11 +52,8 @@ class BaseRepository:
             .values(**data.model_dump())
             .returning(self.model)
         )  # type: ignore
-        try:
-            result = await self.session.execute(add_data_stmt)
 
-        except IntegrityError:
-            raise ItemAlreadyExistsException
+        result = await self.session.execute(add_data_stmt)
         return result.scalars().one()
 
     async def update(
