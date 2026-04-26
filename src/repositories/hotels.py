@@ -1,7 +1,10 @@
 from datetime import date
 
+from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 
+from src.exceptions import ItemAlreadyExistsException
 from src.models.hotels import HotelOrm
 from src.models.rooms import RoomOrm
 from src.repositories.base import BaseRepository
@@ -12,6 +15,19 @@ from src.schemas.hotels import Hotel
 class HotelsRepository(BaseRepository):
     model = HotelOrm
     schema = Hotel
+
+    async def create(self, data: BaseModel):
+        add_data_stmt = (
+            insert(self.model)
+            .values(**data.model_dump())
+            .returning(self.model)
+        )  # type: ignore
+        try:
+            result = await self.session.execute(add_data_stmt)
+
+        except IntegrityError:
+            raise ItemAlreadyExistsException
+        return result.scalars().one()
 
     async def get_all_hotels(self, location, title, limit, offset):
         query = select(HotelOrm)
