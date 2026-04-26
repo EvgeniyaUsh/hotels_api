@@ -2,7 +2,11 @@ from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
-from src.exceptions import ItemAlreadyExistsException, ObjectNotFoundException
+from src.exceptions import (
+    ItemAlreadyExistsException,
+    ObjectHasDependenciesException,
+    ObjectNotFoundException,
+)
 
 
 class BaseRepository:
@@ -71,4 +75,7 @@ class BaseRepository:
 
     async def delete(self, **filter_by) -> None:
         delete_stmt = delete(self.model).filter_by(**filter_by)
-        await self.session.execute(delete_stmt)
+        try:
+            await self.session.execute(delete_stmt)
+        except IntegrityError:
+            raise ObjectHasDependenciesException

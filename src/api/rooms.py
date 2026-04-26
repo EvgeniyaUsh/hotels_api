@@ -9,6 +9,11 @@ from src.schemas.rooms import (
     RoomPatch,
     RoomPatchRequest,
 )
+from src.exceptions import (
+    ItemAlreadyExistsException,
+    ObjectNotFoundException,
+    check_date_in_and_date_out,
+)
 
 router = APIRouter(prefix="/hotels", tags=["Rooms"])
 
@@ -20,6 +25,7 @@ async def get_rooms(
     date_from: date = Query(example="2024-08-01"),
     date_to: date = Query(example="2024-08-10"),
 ):
+    check_date_in_and_date_out(date_from, date_to)
     return await db.rooms.get_filtered_by_date(
         hotel_id=hotel_id, date_from=date_from, date_to=date_to
     )

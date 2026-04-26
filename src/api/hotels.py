@@ -3,7 +3,14 @@ from datetime import date
 from fastapi import APIRouter, Body, HTTPException, Query
 
 from src.api.dependencies import DBDep, PaginationDep
-from src.exceptions import ItemAlreadyExistsException, ObjectNotFoundException
+from src.exceptions import (
+    HotelHasRoomsHTTPException,
+    HotelNotFoundHTTPException,
+    ItemAlreadyExistsException,
+    ObjectHasDependenciesException,
+    ObjectNotFoundException,
+    check_date_in_and_date_out,
+)
 from src.schemas.hotels import HotelCreate, HotelPatch
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
@@ -18,8 +25,9 @@ async def get_hotels(
     date_from: date = Query(example="2024-08-01"),
     date_to: date = Query(example="2024-08-10"),
 ):
-    per_page = pagination.per_page or 5
+    check_date_in_and_date_out(date_from, date_to)
 
+    per_page = pagination.per_page or 5
     return await db.hotels.get_filtered_by_time(
         date_from=date_from,
         date_to=date_to,
@@ -35,10 +43,7 @@ async def get_hotels_by_id(hotel_id: int, db: DBDep):
     try:
         return await db.hotels.get_one(id=hotel_id)
     except ObjectNotFoundException:
-        raise HTTPException(
-            status_code=404,
-            detail="Hotel wasn't found.",
-        )
+        raise HotelNotFoundHTTPException()
 
 
 @router.post("")
@@ -77,10 +82,7 @@ async def edit_hotel(hotel_id: int, hotel_data: HotelCreate, db: DBDep):
     try:
         await db.hotels.update(hotel_data, id=hotel_id)
     except ObjectNotFoundException:
-        raise HTTPException(
-            status_code=422,
-            detail="Hotel wasn't found.",
-        )
+        raise HotelNotFoundHTTPException()
     await db.commit()
     return {"status": "OK"}
 
@@ -98,16 +100,16 @@ async def partially_edit_hotel(
     try:
         await db.hotels.update(hotel_data, is_patch=True, id=hotel_id)
     except ObjectNotFoundException:
-        raise HTTPException(
-            status_code=422,
-            detail="Hotel wasn't found.",
-        )
+        raise HotelNotFoundHTTPException()
     await db.commit()
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}")
 async def delete_hotel(hotel_id: int, db: DBDep):
-    await db.hotels.delete(id=hotel_id)
+    try:
+        await db.hotels.delete(id=hotel_id)
+    except ObjectHasDependenciesException:
+        raise HotelHasRoomsHTTPException()
     await db.commit()
     return {"status": "OK"}
