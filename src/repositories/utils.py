@@ -14,7 +14,9 @@ def rooms_ids_for_booking(
     rooms_booked = (
         select(BookingOrm.room_id, func.count().label("rooms_count"))
         .select_from(BookingOrm)
-        .where(BookingOrm.date_from <= date_to, BookingOrm.date_to >= date_from)
+        .where(
+            BookingOrm.date_from <= date_to, BookingOrm.date_to >= date_from
+        )
         .group_by(BookingOrm.room_id)
         .cte(name="rooms_booked")
     )
@@ -22,9 +24,9 @@ def rooms_ids_for_booking(
     rooms_available = (
         select(
             RoomOrm.id.label("room_id"),
-            (RoomOrm.quantity - func.coalesce(rooms_booked.c.rooms_count, 0)).label(
-                "rooms_left"
-            ),
+            (
+                RoomOrm.quantity - func.coalesce(rooms_booked.c.rooms_count, 0)
+            ).label("rooms_left"),
         )
         .select_from(RoomOrm)
         .outerjoin(rooms_booked, rooms_booked.c.room_id == RoomOrm.id)
