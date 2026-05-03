@@ -12,7 +12,7 @@ from src.schemas.rooms import (
 from src.services.base import BaseService
 
 
-class RoomsService(BaseService):
+class RoomService(BaseService):
     async def get_filtered_by_date(
         self,
         hotel_id: int,

@@ -6,7 +6,7 @@ from src.schemas.hotels import HotelCreate, HotelPatch
 from src.services.base import BaseService
 
 
-class HotelsService(BaseService):
+class HotelService(BaseService):
     async def get_filtered_by_time(
         self,
         pagination: PaginationDep,

@@ -1,8 +1,14 @@
 from fastapi import APIRouter, HTTPException, Response
 
 from src.api.dependencies import DBDep, UserIdDep
-from src.exceptions import ItemAlreadyExistsException
-from src.schemas.users import UserCreate, UserRequestCreate
+from src.exceptions import (
+    EmailNotRegisteredException,
+    EmailNotRegisteredHTTPException,
+    IncorrectPasswordException,
+    IncorrectPasswordHTTPException,
+    ItemAlreadyExistsException,
+)
+from src.schemas.users import UserRequestCreate
 from src.services.auth import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authorization and authentication"])
@@ -13,15 +19,11 @@ async def register_user(
     data: UserRequestCreate,
     db: DBDep,
 ):
-    hashed_password = AuthService().get_hashed_password(data.password)
-    new_user_data = UserCreate(
-        email=data.email, hashed_password=hashed_password
-    )
     try:
-        await db.users.create(new_user_data)
+        await AuthService(db).register_user(data)
     except ItemAlreadyExistsException:
         raise HTTPException(status_code=409, detail="User already exists.")
-    await db.commit()
+
     return {"status": "OK"}
 
 
@@ -31,18 +33,12 @@ async def login_user(
     response: Response,
     db: DBDep,
 ):
-    user = await db.users.get_user_with_hashed_password(email=data.email)
-    if not user:
-        raise HTTPException(
-            status_code=401, detail="Incorrect email or password."
-        )
-
-    if not AuthService().verify_password(data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=401, detail="Incorrect email or password."
-        )
-
-    access_token = AuthService().encode_jwt_access_token({"user_id": user.id})
+    try:
+        access_token = await AuthService(db).login_user(data)
+    except EmailNotRegisteredException:
+        raise EmailNotRegisteredHTTPException
+    except IncorrectPasswordException:
+        raise IncorrectPasswordHTTPException
     response.set_cookie("access_token", access_token)
     return {"access_token": access_token}
 
@@ -52,8 +48,7 @@ async def get_me(
     user_id: UserIdDep,
     db: DBDep,
 ):
-    user = await db.users.get_one_or_none(id=user_id)
-    return user
+    return await AuthService(db).get_one_or_none_user(user_id)
 
 
 @router.post("/logout")
