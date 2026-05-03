@@ -9,9 +9,9 @@ from src.exceptions import (
     ItemAlreadyExistsException,
     ObjectHasDependenciesException,
     ObjectNotFoundException,
-    check_date_in_and_date_out,
 )
 from src.schemas.hotels import HotelCreate, HotelPatch
+from src.services.hotels import HotelsService
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
@@ -25,23 +25,19 @@ async def get_hotels(
     date_from: date = Query(example="2024-08-01"),
     date_to: date = Query(example="2024-08-10"),
 ):
-    check_date_in_and_date_out(date_from, date_to)
-
-    per_page = pagination.per_page or 5
-    return await db.hotels.get_filtered_by_time(
-        date_from=date_from,
-        date_to=date_to,
+    return await HotelsService(db).get_filtered_by_time(
+        pagination=pagination,
         location=location,
         title=title,
-        limit=per_page,
-        offset=per_page * (pagination.page - 1),
+        date_from=date_from,
+        date_to=date_to,
     )
 
 
 @router.get("/{hotel_id}")
 async def get_hotels_by_id(hotel_id: int, db: DBDep):
     try:
-        return await db.hotels.get_one(id=hotel_id)
+        return await HotelsService(db).get_hotel_by_id(hotel_id)
     except ObjectNotFoundException:
         raise HotelNotFoundHTTPException()
 
@@ -69,7 +65,7 @@ async def create_hotel(
     ),
 ):
     try:
-        hotel = await db.hotels.create(hotel_data)
+        hotel = await HotelsService(db).create_hotel(hotel_data)
     except ItemAlreadyExistsException:
         raise HTTPException(status_code=409, detail="Hotel already exists.")
     await db.commit()
@@ -80,10 +76,11 @@ async def create_hotel(
 @router.put("/{hotel_id}")
 async def edit_hotel(hotel_id: int, hotel_data: HotelCreate, db: DBDep):
     try:
-        await db.hotels.update(hotel_data, id=hotel_id)
+        await HotelsService(db).put_hotel(hotel_id, hotel_data)
     except ObjectNotFoundException:
         raise HotelNotFoundHTTPException()
     await db.commit()
+
     return {"status": "OK"}
 
 
@@ -98,18 +95,20 @@ async def partially_edit_hotel(
     db: DBDep,
 ):
     try:
-        await db.hotels.update(hotel_data, is_patch=True, id=hotel_id)
+        await HotelsService(db).patch_hotel(hotel_id, hotel_data)
     except ObjectNotFoundException:
         raise HotelNotFoundHTTPException()
     await db.commit()
+
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}")
 async def delete_hotel(hotel_id: int, db: DBDep):
     try:
-        await db.hotels.delete(id=hotel_id)
+        await HotelsService(db).delete_hotel(hotel_id)
     except ObjectHasDependenciesException:
         raise HotelHasRoomsHTTPException()
     await db.commit()
+
     return {"status": "OK"}

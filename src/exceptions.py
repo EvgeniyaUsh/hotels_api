@@ -56,3 +56,7 @@ class RoomAlreadyExistsHTTPException(HotelsHTTPException):
 class HotelHasRoomsHTTPException(HotelsHTTPException):
     status_code = 409
     detail = "Cannot delete hotel because it still has rooms."
+
+class RoomHasBookingsHTTPException(HotelsHTTPException):
+    status_code = 409
+    detail = "Cannot delete room because it still has bookings."
