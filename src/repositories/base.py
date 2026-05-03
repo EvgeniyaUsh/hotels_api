@@ -1,9 +1,10 @@
+import logging
+
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from src.exceptions import (
-    ItemAlreadyExistsException,
     ObjectHasDependenciesException,
     ObjectNotFoundException,
 )
@@ -25,7 +26,7 @@ class BaseRepository:
         ]
 
     async def get_all(self):
-        print("Getting all facilities from database")
+        logging.info("Getting all facilities from database")
         return await self.get_filtered()
 
     async def get_one_or_none(self, **filter_by):

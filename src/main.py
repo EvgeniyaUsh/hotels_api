@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import sys
 from pathlib import Path
 
@@ -20,6 +21,8 @@ from src.api.rooms import router as router_rooms
 from src.init_redis import redis_manager
 from src.tasks.periodic_task import run_send_email_regularly  # noqa: F401
 
+logging.basicConfig(level=logging.DEBUG)
+
 
 @asynccontextmanager
 async def redis_lifespan(app: FastAPI):
@@ -30,6 +33,7 @@ async def redis_lifespan(app: FastAPI):
         RedisBackend(redis_manager._redis), prefix="fastapi-cache"
     )
     yield
+    logging.info("FastAPI cache initialized")
     # Закрытие соединения с Redis при завершении приложения
     await redis_manager.close()
 
