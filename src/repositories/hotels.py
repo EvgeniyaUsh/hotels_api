@@ -1,7 +1,7 @@
 from datetime import date
 
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 from sqlalchemy.exc import IntegrityError
 
 from src.exceptions import ItemAlreadyExistsException
