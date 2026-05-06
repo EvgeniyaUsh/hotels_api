@@ -22,6 +22,14 @@ class ObjectHasDependenciesException(HotelsException):
     details_error = "Object has dependent records."
 
 
+class EmailNotRegisteredException(HotelsException):
+    details_error = "Email is not registered."
+
+
+class IncorrectPasswordException(HotelsException):
+    details_error = "Incorrect password."
+
+
 def check_date_in_and_date_out(date_from: date, date_to: date):
     if date_from >= date_to:
         raise HTTPException(
@@ -56,3 +64,18 @@ class RoomAlreadyExistsHTTPException(HotelsHTTPException):
 class HotelHasRoomsHTTPException(HotelsHTTPException):
     status_code = 409
     detail = "Cannot delete hotel because it still has rooms."
+
+
+class RoomHasBookingsHTTPException(HotelsHTTPException):
+    status_code = 409
+    detail = "Cannot delete room because it still has bookings."
+
+
+class EmailNotRegisteredHTTPException(HotelsHTTPException):
+    status_code = 404
+    detail = "Email is not registered."
+
+
+class IncorrectPasswordHTTPException(HotelsHTTPException):
+    status_code = 401
+    detail = "Incorrect password."
