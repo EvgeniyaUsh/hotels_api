@@ -21,7 +21,7 @@ from src.api.rooms import router as router_rooms
 from src.init_redis import redis_manager
 from src.tasks.periodic_task import run_send_email_regularly  # noqa: F401
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
@@ -49,4 +49,4 @@ app.include_router(router_images)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", reload=True)
